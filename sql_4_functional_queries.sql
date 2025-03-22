@@ -93,7 +93,7 @@ FROM interests t1
 GROUP BY 
 	t1.interest_name
 ORDER BY 
-	count(t2.user_id) DESC
+	count(t2.user_id) DESC;
 
 -- 10. number of interests per user, users without interests (users + users_interests)
 SELECT 
@@ -111,7 +111,7 @@ GROUP BY
 	t1.last_name,
 	t1.registration_date
 ORDER BY 
-	count(t2.interest_id) DESC
+	count(t2.interest_id) DESC;
 
 -- 11. most common interests in cities, interests without cities (interests + cities_interests)
 SELECT 
@@ -123,7 +123,7 @@ FROM interests t1
 GROUP BY 
 	t1.interest_name
 ORDER BY 
-	count(t2.city_id) DESC
+	count(t2.city_id) DESC;
 
 -- 12. number of interests per city, cities without added interests (cities + cities_interests)
 SELECT 
@@ -137,17 +137,17 @@ GROUP BY
 	t1.city_name,
 	t1.country
 ORDER BY 
-	count(t2.interest_id) DESC
+	count(t2.interest_id) DESC;
 	
 -- 13. how many route codes there are in total (route_codes)
 SELECT 
 	COUNT(route_code_id) as route_codes_cnt
-FROM route_codes
+FROM route_codes;
 
 -- 14. how many operators there are in total (route_codes)
 SELECT 
 	COUNT(distinct operator) as operators_cnt
-FROM route_codes
+FROM route_codes;
 
 -- 15. number of routes per operator (route_codes)
 SELECT 
@@ -155,7 +155,7 @@ SELECT
 	count(route_code_id) as routes_cnt
 FROM route_codes
 GROUP BY
-	operator
+	operator;
 
 -- 16. how many times each operator was used (route_codes + trips + routes)
 SELECT 
@@ -167,12 +167,12 @@ FROM route_codes t1
 	JOIN trip_details t3
 		ON t2.route_id=t3.route_id
 GROUP BY
-	t1.operator
+	t1.operator;
 
 -- 17. how many stations there are overall (stations)
 SELECT 
 	count(station_name) as stations_cnt
-FROM stations 
+FROM stations;
 
 -- 18. how many stations each city has (cities + stations)
 SELECT 
@@ -186,7 +186,7 @@ GROUP BY
 	t1.city_name,
 	t1.country
 ORDER BY 
-	count(station_name) DESC
+	count(station_name) DESC;
 
 -- 19. what amount of co2 emission each user has (users + trips + routes + emissions)
 SELECT 
@@ -222,7 +222,7 @@ FROM trips t1
 	JOIN cities t2
 		ON t1.city_arrival_id=t2.city_id
 GROUP BY 
-	t2.city_name
+	t2.city_name;
 
 -- 21. how many times each station was used (trips + stations)
 SELECT 
@@ -235,12 +235,12 @@ FROM stations t1
 	JOIN trip_details t3
 		ON t2.route_id=t3.route_id
 GROUP BY
-	t1.station_name
+	t1.station_name;
 	
 -- 21. how many trips there are overall (trips)
 SELECT 
 	count(trip_id)
-FROM trips 
+FROM trips;
 
 -- 22. how many routes each trip had
 SELECT 
@@ -250,7 +250,7 @@ FROM trips t1
 	JOIN trip_details t2
 		ON t1.trip_id=t2.trip_id
 GROUP BY
-	t1.trip_id
+	t1.trip_id;
 
 -- 23. how many routes per trip there are generally
 SELECT
@@ -265,7 +265,7 @@ FROM (SELECT
 	GROUP BY
 		t1.trip_id) t
 GROUP BY
-	t.routes_cnt
+	t.routes_cnt;
 
 -- 24. most popular months to travel historically 
 SELECT 
@@ -277,7 +277,7 @@ GROUP BY
 	EXTRACT(MONTH FROM trip_date),
 	EXTRACT(YEAR FROM trip_date)
 ORDER BY 
-	count(trip_id) DESC
+	count(trip_id) DESC;
 
 -- 25. how many trips there were each month in average
 SELECT 
@@ -295,7 +295,7 @@ FROM
 -- 26. how many transport types there are overall
 SELECT 
 	count(transport_type) as transport_types_cnt
-FROM transport_types
+FROM transport_types;
 
 -- 27. new city recommendations for a user based on users experiences (users, trips, users_interests, cities_interests, cities)
 with interests_from_liked_cities as 
@@ -320,10 +320,10 @@ FROM cities_interests t1
 		ON t1.city_id=t3.city_id
 	JOIN users t4 -- exclude current user's city 
 		ON t2.user_id=t4.user_id
-		AND t1.city_id<>t4.current_city_id
+		AND t1.city_id<>t4.current_city_id;
 		
 -- 28. new city recommendations for a user based on users preferences (users, users_interests, cities_interests, cities)
-SELECT 
+SELECT DISTINCT
 	t1.city_id,
 	t3.city_name
 FROM cities_interests t1
@@ -338,4 +338,4 @@ FROM cities_interests t1
 	LEFT JOIN trips t5
 		ON t5.user_id=t2.user_id
         AND t5.city_arrival_id=t1.city_id
-WHERE t5.user_id is null -- excluding the cities where person already was
+WHERE t5.user_id is null; -- excluding the cities where person already was
